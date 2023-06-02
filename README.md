@@ -16,7 +16,7 @@ let mc = MuffinComms(contentController: ucc)
 
 cfg.userContentController = ucc
 webView = WKWebView(frame: .zero, configuration: cfg)
-mc.webView = webView //attach muffincomms to the webview
+mc.webView = webView
 ```
 No initialization is needed for the JS side. You are now ready to start registering handlers and receiving requests. Here is an example that retrieves the content of a file bundled with the app from JS
 ```swift
