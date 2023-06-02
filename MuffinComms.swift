@@ -24,6 +24,10 @@ class MuffinComms: NSObject, WKScriptMessageHandler {
   public var webView: WKWebView? = nil
   
   public func addCallback(_ message: String, callback: @escaping CommsCallback) {
+    guard callbacks[message] == nil else {
+      print("[MuffinComms] Duplicate registration of callback for message '\(message)'. Second handler not registered")
+      return
+    }
     callbacks[message] = callback
   }
   
