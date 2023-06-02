@@ -17,7 +17,7 @@ const MuffinComms = {
       throw "[MuffinComms] Message is undefined!";
     }
     if (data === undefined) {
-      throw "[MuffinComms] Data is undefined!";
+      data = null;
     }
     return new Promise(function(resolve) {
       let id = MuffinComms._callbacks.push(function(data) {
