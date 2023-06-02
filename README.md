@@ -32,7 +32,7 @@ Enumeration with the possible results of a `CommsCallback`. If the operation com
 func MuffinComms.addCallback(message: String, callback: @escaping CommsCallback) -> Void
 ```
 Registers a callback handler for the given message. When `MuffinComms.send(message, data)` is called on the web page, the callback that has the same message is called with this data.
-The data is parsed into JSON before it is passed to the callback, allowing the callback to make conversions such as, but not limited to, `as String`, `as Int` and `as Bool`.
+The data is parsed into JSON before it is passed to the callback, allowing the callback to make conversions such as `as String`, `as Int`, `as Bool`, `as [T]`, and `as [String: T]` (for any T).
 
 ## Sample Usage
 Swift app hosting WKWebView
