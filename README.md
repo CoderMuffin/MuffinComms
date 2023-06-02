@@ -2,11 +2,21 @@
 Asynchronous wrapper around the message system for WKWebView
 
 ## Why?
-Making vanilla web apps that use local files is difficult in iOS. XHR requests are a lot more difficult to use, and permissions will often need confirmation twice - once for the app, and once for the web view. If you own both the web view and the local files, why is this so difficult? This is the problem that MuffinComms addresses.
+Making vanilla web apps that use local files is difficult in iOS. XHR requests suddenly become more difficult to use, resulting in CORS errors, and permissions will often need confirmation twice - once for the app, and once for the web view. If you own both the web view and the local files, why is this so difficult? This is the problem that MuffinComms addresses.
 
 ## Get Started
 Include comms.js in your HTML file and add MuffinComms.swift to your iOS project. Then, initialize MuffinComms like so:
 ```swift
+let cfg = WKWebViewConfiguration()
+let ucc = WKUserContentController()
+
+let mc = MuffinComms(contentController: ucc)
+// add callbacks
+// configure `cfg` and `ucc`
+
+cfg.userContentController = ucc
+webView = WKWebView(frame: .zero, configuration: cfg)
+mc.webView = webView //attach muffincomms to the webview
 ```
 No initialization is needed for the JS side. You are now ready to start registering handlers and receiving requests. Here is an example that retrieves the content of a file bundled with the app from JS
 ```swift
