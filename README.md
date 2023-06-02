@@ -6,6 +6,8 @@ Asynchronous message system for WKWebView
 function MuffinComms.isAvailable() -> boolean
 ```
 Returns true or false depending on whether the `muffinComms` webkit message handler was found. NOTE: MuffinComms may produce unexpected results if your project also uses the `muffinComms` wekbit message handler.
+
+
 ```js
 function MuffinComms.send(message: string, data: any, responseType: String = "text") -> Promise
 ```
@@ -16,11 +18,14 @@ Sends a request to the swift backend, and returns a promise that resolves when t
 | `"json"`       | `Promise<any>` |
 | `"arraybuffer"` | `Promise<ArrayBuffer>` |
 
+
 ## Swift
 ```swift
 typealias MuffinComms.CommsCallback = (Any) -> CommsResult
 ```
 Typealias representing the type of a callback invoked by `addCallback`
+
+
 ```swift
 enum MuffinComms.CommsResult {
   case .ok(_: Data)
@@ -28,11 +33,14 @@ enum MuffinComms.CommsResult {
 }
 ```
 Enumeration with the possible results of a `CommsCallback`. If the operation completed successfully, the data passed is base64 encoded and sent to `comms.js`
+
+
 ```swift
 func MuffinComms.addCallback(message: String, callback: @escaping CommsCallback) -> Void
 ```
 Registers a callback handler for the given message. When `MuffinComms.send(message, data)` is called on the web page, the callback that has the same message is called with this data.
 The data is parsed into JSON before it is passed to the callback, allowing the callback to make conversions such as `as String`, `as Int`, `as Bool`, `as Double`, `as [T]`, and `as [String: T]` (for any T).
+
 
 ## Sample Usage
 Swift app hosting WKWebView
