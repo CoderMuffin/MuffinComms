@@ -2,13 +2,13 @@
 Asynchronous message system for WKWebView
 
 ## JS
-## `MuffinComms.isAvailabile`
+## MuffinComms.isAvailabile
 ```js
 function MuffinComms.isAvailable() -> boolean
 ```
 Returns true or false depending on whether the `muffinComms` webkit message handler was found. NOTE: MuffinComms may produce unexpected results if your project also uses the `muffinComms` wekbit message handler.
 
-## `MuffinComms.send`
+## MuffinComms.send
 ```js
 function MuffinComms.send(message: string, data: any, responseType: String = "text") -> Promise
 ```
@@ -21,13 +21,13 @@ Sends a request to the swift backend, and returns a promise that resolves when t
 
 
 ## Swift
-## `MuffinComms.CommsCallback`
+## MuffinComms.CommsCallback
 ```swift
 typealias MuffinComms.CommsCallback = (Any) -> CommsResult
 ```
 Typealias representing the type of a callback invoked by `addCallback`
 
-## `MuffinComms.CommsResult`
+## MuffinComms.CommsResult
 ```swift
 enum MuffinComms.CommsResult {
   case .ok(_: Data)
@@ -35,8 +35,8 @@ enum MuffinComms.CommsResult {
 }
 ```
 Enumeration with the possible results of a `CommsCallback`. If the operation completed successfully, the data passed is base64 encoded and sent to `comms.js`
----
-## `MuffinComms.addCallback`
+
+## MuffinComms.addCallback
 ```swift
 func MuffinComms.addCallback(message: String, callback: @escaping CommsCallback) -> Void
 ```
