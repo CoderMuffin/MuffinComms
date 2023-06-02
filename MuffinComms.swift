@@ -1,74 +1,9 @@
-//
-//  MuffinComms.swift
-//  abcplayer
-//
-//  Created by Clive Williams on 30/05/2023.
-//
-
 import Foundation
 import WebKit
 
 class MuffinComms: NSObject, WKScriptMessageHandler {
-  typealias CommsCallback = (Any) -> MuffinComms.CommsResult
+  typealias CommsCallback = (Any) -> CommsResult
   
-  struct AnyCodable: Codable {
-      let value: Any
-      
-      init(_ value: Any) {
-          self.value = value
-      }
-      
-      init(from decoder: Decoder) throws {
-          let container = try decoder.singleValueContainer()
-          
-          if let intValue = try? container.decode(Int.self) {
-              value = intValue
-          } else if let doubleValue = try? container.decode(Double.self) {
-              value = doubleValue
-          } else if let boolValue = try? container.decode(Bool.self) {
-              value = boolValue
-          } else if let stringValue = try? container.decode(String.self) {
-              value = stringValue
-          } else if let nestedDict = try? container.decode([String: AnyCodable].self) {
-              value = nestedDict
-          } else if let nestedArray = try? container.decode([AnyCodable].self) {
-              value = nestedArray
-          } else if container.decodeNil() {
-              value = NSNull()
-          } else {
-              throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported type")
-          }
-      }
-      
-      func encode(to encoder: Encoder) throws {
-          var container = encoder.singleValueContainer()
-          
-          switch value {
-          case let intValue as Int:
-              try container.encode(intValue)
-          case let doubleValue as Double:
-              try container.encode(doubleValue)
-          case let boolValue as Bool:
-              try container.encode(boolValue)
-          case let stringValue as String:
-              try container.encode(stringValue)
-          case let nestedDict as [String: AnyCodable]:
-              try container.encode(nestedDict)
-          case let nestedArray as [AnyCodable]:
-              try container.encode(nestedArray)
-          case is NSNull:
-              try container.encodeNil()
-          default:
-              throw EncodingError.invalidValue(value, EncodingError.Context(codingPath: encoder.codingPath, debugDescription: "Unsupported type"))
-          }
-      }
-  }
-
-  struct CommsMessage: Codable {
-    let data: AnyCodable
-    let message: String
-    let id: Int
-  }
   enum CommsResult {
     case ok(_: Data)
     case error(_: String)
@@ -133,12 +68,24 @@ class MuffinComms: NSObject, WKScriptMessageHandler {
     guard let messageData = message.data(using: .utf8) else {
       return .failure(CommsError(message: "Could not parse message data as UTF8 ('\(message)')"))
     }
-    guard let json = try? JSONDecoder().decode(CommsMessage.self, from: messageData) else {
+    guard let json = try? JSONSerialization.jsonObject(with: messageData) else {
       return .failure(CommsError(message: "Could not parse JSON '\(message)'"))
     }
-    guard let callback = callbacks[json.message] else {
-      return .failure(CommsError(message: "Missing callback '\(json.message)'"))
+    guard let jsonDict = json as? [String: Any] else {
+      return .failure(CommsError(message: "Could not parse JSON '\(message)'"))
     }
-    return .success((json.id, callback(json.data.value)))
+    guard let jsonMessage = jsonDict["message"] as? String else {
+      return .failure(CommsError(message: "Malformed request"))
+    }
+    guard let jsonData = jsonDict["data"] else {
+      return .failure(CommsError(message: "Malformed request"))
+    }
+    guard let jsonId = jsonDict["id"] as? Int else {
+      return .failure(CommsError(message: "Malformed request"))
+    }
+    guard let callback = callbacks[jsonMessage] else {
+      return .failure(CommsError(message: "Missing callback '\(jsonMessage)'"))
+    }
+    return .success((jsonId, callback(jsonData)))
   }
 }
